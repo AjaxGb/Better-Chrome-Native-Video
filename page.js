@@ -243,9 +243,8 @@ function handleClick(e){
 	}else if(e.target.classList
 	      && e.target.classList.contains(videoClass)){
 		const v = e.target;
-		if(document.activeElement === v){
-			shortcutFuncs.togglePlay(v);
-		}else{
+		shortcutFuncs.togglePlay(v);
+		if(document.activeElement !== v){
 			v.focus();
 			e.preventDefault();
 			e.stopPropagation();
