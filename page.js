@@ -248,7 +248,7 @@ function ignoreAllIndirectVideos(){
 }
 
 function handleClick(e){
-	if(!dirVideo
+	if(!(dirVideo && e.target === dirVideo)
 	&& !(e.target.dataset
 	  && e.target.dataset[videoAttribute])){
 		return true; // Do not prevent default
@@ -275,9 +275,10 @@ function handleClick(e){
 }
 
 function handleDblClick(e){
-	if(!settings.dblFullScreen || (!dirVideo
-	&& !(e.target.dataset
-	  && e.target.dataset[videoAttribute]))){
+	if(!settings.dblFullScreen
+	|| (!(dirVideo && e.target === dirVideo)
+	  && !(e.target.dataset
+	    && e.target.dataset[videoAttribute]))){
 		return true; // Do not prevent default
 	}
 	const v = dirVideo || e.target;
