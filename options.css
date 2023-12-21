@@ -60,7 +60,7 @@ form, fieldset {
 	margin-top: 10px;
 }
 .inputwrapper {
-	display: inline-block;
+	display: block;
 	white-space: nowrap;
 }
 .inputwrapper * {

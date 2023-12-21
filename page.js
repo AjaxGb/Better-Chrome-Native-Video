@@ -442,7 +442,7 @@ function handleMutationRecords(mrs){
 }
 
 function enableExtension(){
-	chrome.storage.sync.get(settings, function(s){
+	chrome.storage.sync.get(settings, s => {
 		settings = s || settings;
 		if (chrome.runtime.lastError) {
 			console.log("Error while loading settings:",

@@ -1,14 +1,16 @@
-"use strict";
-
 let lastSendResponse;
 
 const toggleContextID = chrome.contextMenus.create({
 	type    : "checkbox",
 	id      : "contextToggle",
 	title   : chrome.i18n.getMessage("contextToggle"),
-	contexts: ["video"],
-	onclick : function(info, tab) {
-		if(lastSendResponse) try {
+	contexts: ["video"]
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+	if (info.menuItemId !== toggleContextID) return;
+	if (lastSendResponse) {
+		try {
 			lastSendResponse({
 				clicked    : true,
 				ignoreVideo: info.checked
@@ -18,11 +20,10 @@ const toggleContextID = chrome.contextMenus.create({
 			// leaving the background script with an expired
 			// sendResponse. No action needed.
 		}
-		
-		chrome.contextMenus.update(toggleContextID, {
-			checked: info.checked
-		});
 	}
+	chrome.contextMenus.update(toggleContextID, {
+		checked: info.checked
+	});
 });
 
 chrome.runtime.onMessage.addListener(
