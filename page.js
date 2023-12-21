@@ -165,7 +165,13 @@ const shortcutFuncs = {
 	},
 
 	toPercentage: function(v,key){
-		v.currentTime = v.duration * (key - 48) / 10.0;
+		if(48 <= key && key <= 57) {
+			// Main keyboard numbers
+			v.currentTime = v.duration * (key - 48) / 10.0;
+		} else if (96 <= key && key <= 105) {
+			// Numpad numbers
+			v.currentTime = v.duration * (key - 96) / 10.0;
+		}
 	},
 };
 
@@ -174,6 +180,7 @@ const keyFuncs = {
 	75 : shortcutFuncs.togglePlay,      // K
 	35 : shortcutFuncs.toEnd,           // End
 	48 : shortcutFuncs.toStart,         // 0
+	96 : shortcutFuncs.toStart,         // numpad 0
 	36 : shortcutFuncs.toStart,         // Home
 	37 : shortcutFuncs.skipLeft,        // Left arrow
 	74 : shortcutFuncs.skipLeft,        // J
@@ -197,6 +204,15 @@ const keyFuncs = {
 	55 : shortcutFuncs.toPercentage,    // 7
 	56 : shortcutFuncs.toPercentage,    // 8
 	57 : shortcutFuncs.toPercentage,    // 9
+	97 : shortcutFuncs.toPercentage,    // numpad 1
+	98 : shortcutFuncs.toPercentage,    // numpad 2
+	99 : shortcutFuncs.toPercentage,    // numpad 3
+	100: shortcutFuncs.toPercentage,    // numpad 4
+	101: shortcutFuncs.toPercentage,    // numpad 5
+	102: shortcutFuncs.toPercentage,    // numpad 6
+	103: shortcutFuncs.toPercentage,    // numpad 7
+	104: shortcutFuncs.toPercentage,    // numpad 8
+	105: shortcutFuncs.toPercentage,    // numpad 9
 };
 
 function registerDirectVideo(v, force){
