@@ -215,6 +215,13 @@ const keyFuncs = {
 	105: shortcutFuncs.toPercentage,    // numpad 9
 };
 
+function focusWholeVideo(e) {
+	// Blur first to remove focus on native controls.
+	// If a native control is focused, it blocks keyboard events.
+	e.blur();
+	e.focus();
+}
+
 function registerDirectVideo(v, force){
 	ignoreAllIndirectVideos();
 	if(dirVideo){
@@ -231,7 +238,7 @@ function registerDirectVideo(v, force){
 function ignoreDirectVideo(reregister){
 	if(reregister && document.body.contains(dirVideo)){
 		registerVideo(dirVideo);
-		dirVideo.focus();
+		focusWholeVideo(dirVideo);
 	}else{
 		dirVideo.dataset[videoAttribute] = "";
 	}
@@ -291,7 +298,7 @@ function handleClick(e){
 			shortcutFuncs.togglePlay(v);
 		}
 	}
-	v.focus();
+	focusWholeVideo(v);
 	e.preventDefault();
 	e.stopPropagation();
 	return false
@@ -347,10 +354,20 @@ function handleKeyOther(e){
 	return true; // Do not prevent default if no UI activated
 }
 
-function handleFullscreen(){
-	if(document.webkitFullscreenElement
-	&& document.webkitFullscreenElement.dataset[videoAttribute]){
-		document.webkitFullscreenElement.focus();
+function handleFullscreen(e){
+	const v = e.target;
+	if(v && v.dataset[videoAttribute]
+		&& (document.fullscreenElement == v || document.activeElement == v)){
+		focusWholeVideo(e.target);
+	}
+}
+
+const RefocusEvents = ["volumechange", "play", "pause", "seeking"];
+
+function handleRefocusEvent(e) {
+	const v = e.target;
+	if(v && v.dataset[videoAttribute] && document.activeElement == v){
+		focusWholeVideo(e.target);
 	}
 }
 
@@ -389,7 +406,7 @@ function updateContextTarget(e){
 							registerDirectVideo(target, true);
 						}else{
 							registerVideo(target, true);
-							target.focus();
+							focusWholeVideo(target);
 						}
 					}
 				}
@@ -419,7 +436,7 @@ function handleMutationRecords(mrs){
 					registerDirectVideo(t);
 				}else{
 					registerVideo(t);
-					t.focus();
+					focusWholeVideo(t);
 				}
 			}
 		}else if(mrs[i].type === "childList"){
@@ -466,7 +483,7 @@ function enableExtension(){
 		}
 	});
 	// useCapture: Handler fired while event is bubbling down instead of up
-	document.addEventListener("webkitfullscreenchange", handleFullscreen, true);
+	document.addEventListener("fullscreenchange", handleFullscreen, true);
 	document.addEventListener("mouseover", updateContextTarget, true);
 	document.addEventListener("mousedown", updateContextTarget, true);
 	document.addEventListener("contextmenu", updateContextTarget, true);
@@ -476,6 +493,10 @@ function enableExtension(){
 	document.addEventListener("keydown", handleKeyDown, true);
 	document.addEventListener("keypress", handleKeyOther, true);
 	document.addEventListener("keyup", handleKeyOther, true);
+	
+	for (const event of RefocusEvents) {
+		document.addEventListener(event, handleRefocusEvent, true);
+	}
 	
 	chrome.runtime.onMessage.addListener(onMessage);
 	
@@ -497,7 +518,7 @@ function enableExtension(){
 }
 
 function disableExtension(){
-	document.removeEventListener("webkitfullscreenchange", handleFullscreen, true);
+	document.removeEventListener("fullscreenchange", handleFullscreen, true);
 	document.removeEventListener("mouseover", updateContextTarget, true);
 	document.removeEventListener("mousedown", updateContextTarget, true);
 	document.removeEventListener("contextmenu", updateContextTarget, true);
@@ -507,6 +528,10 @@ function disableExtension(){
 	document.removeEventListener("keydown", handleKeyDown, true);
 	document.removeEventListener("keypress", handleKeyOther, true);
 	document.removeEventListener("keyup", handleKeyOther, true);
+	
+	for (const event of RefocusEvents) {
+		document.removeEventListener(event, handleRefocusEvent, true);
+	}
 	
 	chrome.runtime.onMessage.removeListener(onMessage);
 	
