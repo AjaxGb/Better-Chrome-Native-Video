@@ -1,11 +1,15 @@
+const toggleContextID = "contextToggle";
+
 let lastSendResponse;
 
-const toggleContextID = chrome.contextMenus.create({
-	type    : "checkbox",
-	id      : "contextToggle",
-	title   : chrome.i18n.getMessage("contextToggle"),
-	contexts: ["video"]
-});
+chrome.runtime.onInstalled.addListener(() => {
+	chrome.contextMenus.create({
+		type    : "checkbox",
+		id      : toggleContextID,
+		title   : chrome.i18n.getMessage("contextToggle"),
+		contexts: ["video"]
+	});
+})
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
 	if (info.menuItemId !== toggleContextID) return;
